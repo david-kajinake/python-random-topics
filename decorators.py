@@ -1,18 +1,31 @@
-is_logged_in = False
 
-def login_required( requested_function ):
-    def check_auth_status( *args , **kwargs ):
-        if is_logged_in:
-            print("Permission granted")
-            requested_function( *args , **kwargs)
-            print("Session ended")
+"""Simulate rate limit"""
+
+request_times = 0
+MAX_REQUESTS = 5
+
+def rate_limit( request_function ):
+
+    def wrapper( *args , **kwargs ):
+        global request_times
+        if request_times < MAX_REQUESTS:
+            request_times += 1
+            print(f"Requet {request_times} Accepted")
+            request_function(*args , **kwargs)
         else:
-            print("Permission denied. You must login")
-    return check_auth_status
+            print("429 Too Many Requests")
+        
+    return wrapper
 
+@rate_limit
+def greet(name):
+    print(f"Hello {name}..How are you doing")
 
-@login_required
-def self_introduction(name):
-    print(f"Hello My name is {name}...Nice to meet you")
-
-self_introduction("Peter Okoye")
+greet("Alice")
+greet("George")
+greet("Amanda")
+greet("Ericick")
+greet("Tonny")
+greet("Anita")
+greet("Laur")
+greet("Diana")
