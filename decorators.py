@@ -1,26 +1,42 @@
+"""Smulate a function call retry"""
 
-"""Simulate rate limit"""
+retries = 0
+MAX_RETRIES = 5
+import time
 
-request_times = 0
-MAX_REQUESTS = 5
+def retry( func ):
+    def wrapper( *args, **kwargs ):
+        global retries
 
-def rate_limit( request_function ):
-    def wrapper(*args , **kwargs):
-        global request_times
-        while request_times < MAX_REQUESTS:
-            request_times += 1
-            request_function(*args , **kwargs)
-        print("You have hit the limit...Try Again Later")
-
+        while retries < MAX_RETRIES:
+            try:
+                print("Calling.....")
+                result = func( *args , **kwargs )
+                return result
+            except Exception as e:
+                print(f"Error: {e}\nFailed, Retrying.....")
+                retries += 1
+                time.sleep(2)
+        print("Process terminated.")
     return wrapper
 
 
-@rate_limit
-def ask_random():
-    random_word = input("Enter a random word:\n")
-    print(f"\nRandom word is: {random_word}")
 
-ask_random()
+
+@retry
+def devide():
+    numerator = int(input("Enter a numerator:\n"))
+    denominator = int(input("Enter a denominator:\n"))
+    answer = numerator / denominator
+    return answer
+
+
+response = devide()
+print(response)
+
+
+
+
 
 
 
