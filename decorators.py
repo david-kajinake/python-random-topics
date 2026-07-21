@@ -5,27 +5,23 @@ request_times = 0
 MAX_REQUESTS = 5
 
 def rate_limit( request_function ):
-
-    def wrapper( *args , **kwargs ):
+    def wrapper(*args , **kwargs):
         global request_times
-        if request_times < MAX_REQUESTS:
+        while request_times < MAX_REQUESTS:
             request_times += 1
-            print(f"Requet {request_times} Accepted")
             request_function(*args , **kwargs)
-        else:
-            print("429 Too Many Requests")
-        
+        print("You have hit the limit...Try Again Later")
+
     return wrapper
 
-@rate_limit
-def greet(name):
-    print(f"Hello {name}..How are you doing")
 
-greet("Alice")
-greet("George")
-greet("Amanda")
-greet("Ericick")
-greet("Tonny")
-greet("Anita")
-greet("Laur")
-greet("Diana")
+@rate_limit
+def ask_random():
+    random_word = input("Enter a random word:\n")
+    print(f"\nRandom word is: {random_word}")
+
+ask_random()
+
+
+
+
